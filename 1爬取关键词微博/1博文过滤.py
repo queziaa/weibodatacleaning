@@ -2,9 +2,10 @@
 from calendar import c
 from itertools import count
 
-import jiagu
-import jieba
+# import jiagu
+# import jieba
 import json
+from operator import le
 import os
 import re
 import emoji
@@ -25,13 +26,13 @@ idList = {}
 outid = {}
 # foll = {}
 start_time = time.time()  # 记录开始时间
-with open('../2爬取用户信息/爬取用户信息过滤.txt', 'r', encoding='UTF-8') as f:
-    for line in f:
-        if int(line) not in idList:
-            idList[int(line)] = 1
+# with open('../2爬取用户信息/爬取用户信息过滤.txt', 'r', encoding='UTF-8') as f:
+#     for line in f:
+#         if int(line) not in idList:
+#             idList[int(line)] = 1
 
-with open('neg.txt', 'w', encoding='UTF-8') as outfile:
-    with open('爬取关键词微博.txt', 'r', encoding='UTF-8') as f:
+with open('temp.txt', 'w', encoding='UTF-8') as outfile:
+    with open('../3爬取用户微博/爬取用户微博合并.txt', 'r', encoding='UTF-8') as f:
         for line in f:
             s = s + 1
 
@@ -43,12 +44,12 @@ with open('neg.txt', 'w', encoding='UTF-8') as outfile:
 
             obj = json.loads(line)
             content = obj['content']
-            id = int(obj['user']['_id'])
+            # id = int(obj['user']['_id'])
             # 筛选
             if len(content) > 200:
                 continue
-            if id not in idList:
-                continue
+            # if id not in idList:
+                # continue
             if content[0] == '【':
                 continue
             if obj['source'] == '微博视频号':
@@ -86,30 +87,37 @@ with open('neg.txt', 'w', encoding='UTF-8') as outfile:
             content.replace(" ", "")
             content = re.sub(r'(\w)\1{2,}', '', content)
             content = re.sub(r'[^\u4e00-\u9fa5\d]+', '', content)
-            if len(content) < 5:
+            if not 20 < len(content) < 30 :
                 continue
-            if content.find('疫情') != -1:
-                continue
-            if content.find('新冠') != -1:
-                continue
-            if content.find('冠状病毒') != -1:
-                continue
-            if content.find('日报') != -1:
-                continue
-            cont = 0
+            # if content.find('疫情') != -1:
+            #     continue
+            # if content.find('新冠') != -1:
+            #     continue
+            # if content.find('冠状病毒') != -1:
+            #     continue
+            # if content.find('日报') != -1:
+            #     continue
             # sss = jiagu.seg(content)
             # sss = ' '.join(sss)
-            sss = jiagu.sentiment(content)
-            n = sss[1]
-            if sss[0] == 'negative':
-                n = -n
-            n = n * 100
-            n = int(n)
-            if -66 > n:
-                if id not in outid:
-                    outid[id] = 1
-                else:
-                    outid[id] = outid[id] + 1
+
+            # if id not in outid:
+                # outid[id] = 1
+            # else:
+                # outid[id] = outid[id] + 1
+
+            # sss = jiagu.sentiment(content)
+            # n = sss[1]
+            # if sss[0] == 'negative':
+                # n = -n
+            # n = n * 100
+            # n = int(n)
+            # if -66 > n:
+                # if id not in outid:
+                #     outid[id] = 1
+                # else:
+                #     outid[id] = outid[id] + 1
+
+
                 # outfile.write(str(n) + '\n')
                 # outfile.write(obj['content'] + '\n')
                 # outfile.write('----------------' + '\n')
@@ -118,7 +126,7 @@ with open('neg.txt', 'w', encoding='UTF-8') as outfile:
             # print(sss)
             # print('--------------')
             # outfile.write(str(n) + '\n')
-            # outfile.write(content + '\n')
+            outfile.write(content + '\n')
 
             # outfile.write(json.dumps(obj, ensure_ascii=False) + '\n')
             i = i + 1
